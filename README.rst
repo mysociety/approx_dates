@@ -138,7 +138,7 @@ for development with:
    pip install -e .
    pip install tox
 
-And then run the tests with::
+And then run the tests with:
 
 .. code:: bash
 
