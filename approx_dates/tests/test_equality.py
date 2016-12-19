@@ -59,3 +59,11 @@ class TestApproxDateEquality(TestCase):
         approx_date = ApproxDate.from_iso8601('1999')
         datetime_date = date(1964, 6, 26)
         assert not (approx_date == datetime_date)
+        
+    # Comparisons to other objects should be false, not fail 
+    def test_past_is_not_non_date(self):
+        approx_date = ApproxDate.PAST
+        assert not (approx_date == None)
+        assert not (approx_date == "past")
+        assert not (approx_date == 15)
+
