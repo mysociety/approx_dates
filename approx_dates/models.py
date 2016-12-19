@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 import calendar
 from datetime import date
 import re
-from types import NoneType
 import six
 
 class classproperty(object):
