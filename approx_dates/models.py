@@ -3,8 +3,15 @@ from __future__ import unicode_literals
 import calendar
 from datetime import date
 import re
-
 import six
+
+class classproperty(object):
+
+    def __init__(self, fget):
+        self.fget = fget
+
+    def __get__(self, owner_self, owner_cls):
+        return self.fget(owner_cls)
 
 
 ISO8601_DATE_REGEX_YYYY_MM_DD = \
@@ -25,7 +32,15 @@ class ApproxDate(object):
         self.earliest_date = earliest_date
         self.latest_date = latest_date
         self.source_string = source_string
+    
+    @classproperty
+    def FUTURE(cls):
+        return cls(_max_date, _max_date)
 
+    @classproperty
+    def PAST(cls):
+        return cls(_min_date, _min_date)
+    
     @classmethod
     def from_iso8601(self, iso8601_date_string):
         full_match = ISO8601_DATE_REGEX_YYYY_MM_DD.search(iso8601_date_string)
@@ -74,8 +89,11 @@ class ApproxDate(object):
         if isinstance(other, date):
             return self.earliest_date == self.latest_date and \
                self.earliest_date == other
-        return self.earliest_date == other.earliest_date and \
-            self.latest_date == other.latest_date
+        if hasattr(other,"earliest_date") and hasattr(other,"latest_date"):
+            return self.earliest_date == other.earliest_date and \
+                self.latest_date == other.latest_date
+        else:
+            return False
 
     def __ne__(self, other):
         return not (self == other)
@@ -103,7 +121,3 @@ class ApproxDate(object):
         except AttributeError:
             later_bound = end_date
         return earlier_bound <= d <= later_bound
-
-
-ApproxDate.FUTURE = ApproxDate(_max_date, _max_date)
-ApproxDate.PAST = ApproxDate(_min_date, _min_date)

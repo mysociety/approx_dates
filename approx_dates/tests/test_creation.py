@@ -5,7 +5,6 @@ from approx_dates.models import ApproxDate
 from six import text_type
 import pytest
 
-
 class TestCreation(TestCase):
 
     def test_create_from_full_iso_8601(self):
@@ -60,3 +59,14 @@ class TestCreation(TestCase):
         assert d.earliest_date == date(1, 1, 1)
         assert d.latest_date == date(1, 1, 1)
         assert text_type(d) == 'past'
+        
+    def test_future_past_immutable(self):
+        p = ApproxDate.PAST
+        p.earliest_date = date(1,1,5)
+        assert p != ApproxDate.PAST
+        p = ApproxDate.FUTURE
+        p.earliest_date = date(8888, 12, 31)
+        assert p != ApproxDate.PAST        
+        
+        
+        
