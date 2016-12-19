@@ -5,9 +5,6 @@ from approx_dates.models import ApproxDate
 from six import text_type
 import pytest
 
-print ApproxDate.PAST
-
-
 class TestCreation(TestCase):
 
     def test_create_from_full_iso_8601(self):
