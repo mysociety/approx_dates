@@ -48,8 +48,53 @@ class ApproxDate(object):
         self.latest_date = latest_date
         self.source_string = source_string
 
+
+    def is_partial_just_year(self):
+        """
+        Are our dates the start and end of a year?
+        """
+        ed = self.earliest_date
+        ld = self.latest_date
+        if ed.year == ld.year:
+            if ed.month == 1 and ed.day == 1:
+                return ld.month == 12 and ld.day == 31
+
+    def is_partial_just_year_and_month(self):
+        """
+        Are the dates the start and end of a month?
+        """
+        ed = self.earliest_date
+        ld = self.latest_date
+        if ed.month == ld.month and ed.year == ld.year:
+            days_in_month = calendar.monthrange(ed.year, ed.month)[1]
+            return ed.day == 1 and ld.day == days_in_month
+
+    def to_iso8601(self):
+        """
+        Convert the date range into the most compact
+        iso8601 possible
+        """
+        if self.earliest_date == self.latest_date:
+            return self.earliest_date.isoformat()
+        else:
+            if self.is_partial_just_year_and_month():
+                return self.latest_date.strftime("%Y-%m")
+            if self.is_partial_just_year():
+                return "{0}".format(self.earliest_date.year)
+        #if none of these - return a date range
+        return "{0}/{1}".format(self.earliest_date.isoformat(),
+                                self.latest_date.isoformat())
+
     @classmethod
     def from_iso8601(self, iso8601_date_string):
+        if "/" in iso8601_date_string: #extract double date
+            start,end = iso8601_date_string.split("/")
+            start_date = ApproxDate.from_iso8601(start)
+            end_date = ApproxDate.from_iso8601(end)
+            combined = ApproxDate(start_date.earliest_date,
+                                  end_date.latest_date,
+                                  iso8601_date_string)
+            return combined
         full_match = ISO8601_DATE_REGEX_YYYY_MM_DD.search(iso8601_date_string)
         if full_match:
             d = date(*(int(p, 10) for p in full_match.groups()))
@@ -90,7 +135,7 @@ class ApproxDate(object):
             return 'future'
         if self.past:
             return 'past'
-        return '{0} to {1}'.format(self.earliest_date, self.latest_date)
+        return self.to_iso8601()
 
     def __eq__(self, other):
         if isinstance(other, date):
@@ -128,4 +173,3 @@ class ApproxDate(object):
         except AttributeError:
             later_bound = end_date
         return earlier_bound <= d <= later_bound
-

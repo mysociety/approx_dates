@@ -47,7 +47,7 @@ class TestCreation(TestCase):
 
     def test_abritrary_date_range(self):
         d = ApproxDate(date(1926, 1, 3), date(2016, 3, 8))
-        assert text_type(d) == '1926-01-03 to 2016-03-08'
+        assert text_type(d) == '1926-01-03/2016-03-08'
 
     def test_future(self):
         d = ApproxDate.FUTURE

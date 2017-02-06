@@ -47,3 +47,13 @@ class TestRange(TestCase):
         d1 = date(2000, 1, 1)
         d2 = date(2005, 12, 31)
         assert not ApproxDate.possibly_between(d1, date(1980, 1, 1), d2)
+
+    def test_iso_conversions(self):
+        a = ApproxDate.from_iso8601("2015")
+        assert a.to_iso8601() == "2015"
+        a = ApproxDate.from_iso8601("2015-06")
+        assert a.to_iso8601() == "2015-06"
+        a = ApproxDate.from_iso8601("2015-06-23")
+        assert a.to_iso8601() == "2015-06-23"
+        a = ApproxDate.from_iso8601("2015-06-23/2015-07-12")
+        assert a.to_iso8601() == "2015-06-23/2015-07-12"
