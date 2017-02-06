@@ -74,8 +74,11 @@ class ApproxDate(object):
         if isinstance(other, date):
             return self.earliest_date == self.latest_date and \
                self.earliest_date == other
-        return self.earliest_date == other.earliest_date and \
-            self.latest_date == other.latest_date
+        if hasattr(other,"earliest_date") and hasattr(other,"latest_date"):
+            return self.earliest_date == other.earliest_date and \
+                self.latest_date == other.latest_date
+        else:
+            return False
 
     def __ne__(self, other):
         return not (self == other)
