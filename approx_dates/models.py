@@ -6,6 +6,20 @@ import re
 
 import six
 
+class classproperty(object):
+    """
+    This decorator acts as @property (returning a new result
+    from the method each time the property is requested) but
+    for what would otherwise be a @classmethod.
+    source: http://stackoverflow.com/a/13624858/223092
+    """
+    def __init__(self, fget):
+        self.fget = fget
+
+    def __get__(self, owner_self, owner_cls):
+        return self.fget(owner_cls)
+
+
 
 ISO8601_DATE_REGEX_YYYY_MM_DD = \
     re.compile(r'^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})$')
@@ -20,6 +34,14 @@ _min_date = date(1, 1, 1)
 
 @six.python_2_unicode_compatible
 class ApproxDate(object):
+
+    @classproperty
+    def FUTURE(cls):
+        return cls(_max_date, _max_date)
+
+    @classproperty
+    def PAST(cls):
+        return cls(_min_date, _min_date)
 
     def __init__(self, earliest_date, latest_date, source_string=None):
         self.earliest_date = earliest_date
@@ -107,6 +129,3 @@ class ApproxDate(object):
             later_bound = end_date
         return earlier_bound <= d <= later_bound
 
-
-ApproxDate.FUTURE = ApproxDate(_max_date, _max_date)
-ApproxDate.PAST = ApproxDate(_min_date, _min_date)
