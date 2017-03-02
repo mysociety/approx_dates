@@ -60,3 +60,13 @@ class TestCreation(TestCase):
         assert d.earliest_date == date(1, 1, 1)
         assert d.latest_date == date(1, 1, 1)
         assert text_type(d) == 'past'
+
+    def test_future_immutable(self):
+        p = ApproxDate.FUTURE
+        p.earliest_date = date(8888, 12, 31)
+        assert p != ApproxDate.PAST
+
+    def test_past_immutable(self):
+        p = ApproxDate.PAST
+        p.earliest_date = date(1,1,5)
+        assert p != ApproxDate.PAST
